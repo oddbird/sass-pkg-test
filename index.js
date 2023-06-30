@@ -53,6 +53,8 @@ const fooExportCases = [
   ['fooExport/styles.scss', '/node_modules/fooExport/dist/js/styles.scss'],
   // _styles.scss is a subpath export, so resolves to an exact file
   ['fooExport/_styles.scss', '/node_modules/fooExport/dist/scss/_index.scss'],
+  // "sass" is a subpath export, so resolves to an exact file
+  ['fooExport/sass', '/node_modules/fooExport/dist/scss/_index.scss'],
 ];
 fooExportCases.forEach(checkExample);
 
