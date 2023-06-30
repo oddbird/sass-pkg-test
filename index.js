@@ -61,7 +61,10 @@ fooExportCases.forEach(checkExample);
 line();
 console.log('@bar/foo - namespaced module name\n');
 /** @type TestCase[] */
-const barFooCases = [['@bar/foo', '/node_modules/@bar/foo']];
+const barFooCases = [
+  ['@bar/foo', '/node_modules/@bar/foo'],
+  ['@bar/foo/dist/styles.scss', '/node_modules/@bar/foo/dist/styles.scss'],
+];
 barFooCases.forEach(checkExample);
 
 line();
