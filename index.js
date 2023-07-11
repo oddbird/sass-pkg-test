@@ -54,7 +54,7 @@ conditionalStyleCases.forEach(checkExample);
 
 line();
 console.log('conditional-order - "sass" condition defined *last*');
-console.log('                    returns index and NOT path defined in index');
+console.log('                    returns index and NOT path defined in package');
 /** @type TestCase[] */
 const conditionalOrderCases = [
   ['conditional-order', '/node_modules/conditional-order/index.scss']
