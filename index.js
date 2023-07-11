@@ -28,11 +28,7 @@ line();
 console.log('foo - simple module with no exports, "main" is in root\n');
 /** @type TestCase[] */
 const fooCases = [
-  ['foo', '/node_modules/foo'],
-  // Attempting to load a non-valid file will fail
-  ['foo/index.js', null],
-  // foo/index resolves to foo/index.js. Since this is not a valid file, and a different path than expected, return the directory
-  ['foo/index', '/node_modules/foo'],
+  ['foo', '/node_modules/foo/index.scss'],
   ['foo/_index.scss', '/node_modules/foo/_index.scss'],
   ['foo/dist/scss', '/node_modules/foo/dist/scss'],
   ['foo/dist/scss/foo', '/node_modules/foo/dist/scss/foo'],
@@ -41,28 +37,59 @@ const fooCases = [
 fooCases.forEach(checkExample);
 
 line();
-console.log('fooExport - module defines its exports in package.json');
+console.log('conditional-sass - "sass" condition defined');
 /** @type TestCase[] */
-const fooExportCases = [
-  // default export is in dist, so this algorithm resolves to that folder
-  ['fooExport', '/node_modules/fooExport/dist/js'],
-  // _styles.scss is the export, so styles (or _styles or styles.scss) resolve to the default export, and then append their path
-  // This shows the initial pkg resolution step does not handle partials or index files
-  ['fooExport/styles', '/node_modules/fooExport/dist/js/styles'],
-  ['fooExport/_styles', '/node_modules/fooExport/dist/js/_styles'],
-  ['fooExport/styles.scss', '/node_modules/fooExport/dist/js/styles.scss'],
-  // _styles.scss is a subpath export, so resolves to an exact file
-  ['fooExport/_styles.scss', '/node_modules/fooExport/dist/scss/_index.scss'],
-  // "sass" is a subpath export, so resolves to an exact file
-  ['fooExport/sass', '/node_modules/fooExport/dist/scss/_index.scss'],
-];
-fooExportCases.forEach(checkExample);
+const conditionalSassCases = [
+  ['conditional-sass', '/node_modules/conditional-sass/scss/styles.scss']
+]
+conditionalSassCases.forEach(checkExample);
+
+line();
+console.log('conditional-style - "style" condition defined');
+/** @type TestCase[] */
+const conditionalStyleCases = [
+  ['conditional-style', '/node_modules/conditional-style/css/styles.css']
+]
+conditionalStyleCases.forEach(checkExample);
+
+line();
+console.log('conditional-order - "sass" condition defined *last*');
+console.log('                    returns index and NOT path defined in index');
+/** @type TestCase[] */
+const conditionalOrderCases = [
+  ['conditional-order', '/node_modules/conditional-order/index.scss']
+]
+conditionalOrderCases.forEach(checkExample);
+
+line();
+console.log('root-sass - "sass" key defined');
+/** @type TestCase[] */
+const rootSassCases = [
+  ['root-sass', '/node_modules/root-sass/scss/styles.scss']
+]
+rootSassCases.forEach(checkExample);
+
+line();
+console.log('root-style - "style" key defined');
+/** @type TestCase[] */
+const rootStyleCases = [
+  ['root-style', '/node_modules/root-style/css/styles.css']
+]
+rootStyleCases.forEach(checkExample);
+
+line();
+console.log('root-index - index file in root directory');
+/** @type TestCase[] */
+const rootIndexCases = [
+  ['root-index', '/node_modules/root-index/index.scss']
+]
+rootIndexCases.forEach(checkExample);
 
 line();
 console.log('@bar/foo - namespaced module name\n');
 /** @type TestCase[] */
 const barFooCases = [
-  ['@bar/foo', '/node_modules/@bar/foo'],
+  ['@bar/foo', '/node_modules/@bar/foo/_index.scss'],
   ['@bar/foo/dist/styles.scss', '/node_modules/@bar/foo/dist/styles.scss'],
 ];
 barFooCases.forEach(checkExample);
@@ -77,10 +104,11 @@ const badImportCases = [
 badImportCases.forEach(checkExample);
 
 line();
-console.log('noPackage - a package missing a package.json file\n');
+console.log('no-package - a package missing a package.json file\n');
 /** @type TestCase[] */
 const noPackageCases = [
-  ['noPackage', null],
-  ['noPackage/_index.scss', '/node_modules/noPackage/_index.scss'],
+  ['no-package', null],
+  // Without a package.json, we can't resolve the root path
+  ['no-package/_index.scss', null],
 ];
 noPackageCases.forEach(checkExample);
