@@ -8,7 +8,7 @@
     "postinstall": "cp -r node_modules_keep/. node_modules"
   },
   "author": "James Stuckey Weber",
-  "license": "ISC",
+  "license": "MIT",
   "dependencies": {
     "resolve.exports": "^2.0.2"
   }
