@@ -1,11 +1,12 @@
 # Sass pkg: test
 
 This is a repo to prove out the recommended algorithm for resolving `pkg` URLs
-as dependencies in Sass, per the Package Imports proposal.
+as dependencies in Sass, per the
+[Package Imports proposal](https://github.com/oddbird/sass/pull/3).
 
-The node_modules_keep folder contains mocked dependencies. Running `npm install`
-will install the dependencies and then copy the mocked dependencies over in the
-`postinstall` script.
+The `node_modules_keep` folder contains mocked dependencies. Running
+`npm install` will install the dependencies and then copy the mocked
+dependencies over in the `postinstall` script.
 
 To run the tests, run `npm install`, and then `node index.js`.
 
