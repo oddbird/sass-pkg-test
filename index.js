@@ -104,6 +104,17 @@ const badImportCases = [
 badImportCases.forEach(checkExample);
 
 line();
+console.log('@angular/material - community example\n');
+/** @type TestCase[] */
+const angularMaterialCases = [
+  ['@angular/material', '/node_modules/@angular/material/_index.scss'],
+  ['@angular/material/theming', '/node_modules/@angular/material/_theming.scss'],
+  ['@angular/material/_theming', '/node_modules/@angular/material/_theming.scss'],
+  ['@angular/material/prebuilt-themes/indigo-pink.css', '/node_modules/@angular/material/prebuilt-themes/indigo-pink.css'],
+];
+angularMaterialCases.forEach(checkExample);
+
+line();
 console.log('no-package - a package missing a package.json file\n');
 /** @type TestCase[] */
 const noPackageCases = [
@@ -112,3 +123,4 @@ const noPackageCases = [
   ['no-package/_index.scss', null],
 ];
 noPackageCases.forEach(checkExample);
+
