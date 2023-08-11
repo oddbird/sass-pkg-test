@@ -11,7 +11,9 @@ function resolvingAPackageName(path) {
   } else return path.split('/')[0];
 }
 
-function getPackageRoot(pkgPath) {
+// This is a nonnormative function 
+// Notably it doesn't handle nested packages
+function getPackageRoot(pkgPath, previousURL) {
   const packageName = resolvingAPackageName(pkgPath);
   let path;
   try {
@@ -28,7 +30,7 @@ function getPackagePackage(pkgPath) {
   const root = getPackageRoot(pkgPath);
   if (!root) return { packageJSON: null, packagePath: null };
   const packagePath = root;
-  return { packageJSON: require(packagePath + '/package.json'), packagePath: packagePath };
+  return { packageManifest: require(packagePath + '/package.json'), packagePath: packagePath };
 }
 
 function hasAnyValidExtension(file) {
@@ -42,40 +44,57 @@ function resolveWithCondition(packageJSON, pkgPath, condition) {
     return undefined;
   }
 }
-module.exports = (pkgPath) => {
-  const { packageJSON, packagePath } = getPackagePackage(pkgPath);
-  if (!packageJSON || !packagePath) return null;
+
+// Implementation of procedure "Resolving package root values"
+function resolvingPackageRootValues(packagePath, packageManifest) {
+  let sassValue = packageManifest.sass;
+  if (sassValue) {
+    sassValue = sassValue.replace(/^\.\//, '');
+    return `${packagePath}/${sassValue}`;
+  }
+  let styleValue = packageManifest.style;
+  if (styleValue) {
+    styleValue = styleValue.replace(/^\.\//, '');
+    return `${packagePath}/${styleValue}`;
+  }
+
+  // @todo Handle partials and other extensions
+  else return `${packagePath}/index.scss`
+}
+
+// Implementation of procedure "Node Algorithm for Resolving a `pkg:` URL"
+module.exports = (url, previousURL) => {
+  const fullPath = new URL(url).pathname;
+  const packageName = resolvingAPackageName(fullPath);
+
+  let subPath = fullPath.replace(packageName, '');
+  const packageRoot = getPackageRoot(packageName, previousURL);
+
+  const { packageManifest, packagePath } = getPackagePackage(fullPath);
+  if (!packageManifest || !packagePath) return null;
 
   // 1. `sass` condition in package.json `exports`
-  let sassCondition = resolveWithCondition(packageJSON, pkgPath, 'sass');
+  let sassCondition = resolveWithCondition(packageManifest, fullPath, 'sass');
   if (sassCondition) {
     sassCondition = sassCondition.filter(hasAnyValidExtension);
     if (sassCondition.length) {
       return path.resolve(packagePath, sassCondition[0]);
     }
   }
+
   // 2. `style` condition in package.json `exports`
-  let styleCondition = resolveWithCondition(packageJSON, pkgPath, 'style');
+  let styleCondition = resolveWithCondition(packageManifest, fullPath, 'style');
   if (styleCondition) {
     styleCondition = styleCondition.filter(hasAnyValidExtension);
     if (styleCondition.length) {
       return path.resolve(packagePath, styleCondition[0]);
     }
   }
-  // 3. If no subpath, then find root export-
-  if (resolvingAPackageName(pkgPath) === pkgPath) {
-    //   1. `sass` key at package.json root (sass, scss, or css)
-    if (packageJSON.sass) return path.resolve(packagePath, packageJSON.sass);
-    //   2. `style` key at package.json root (css only)
-    if (packageJSON.style) return path.resolve(packagePath, packageJSON.style);
-    //   3. `index` file at package root, resolved for file extensions and partials
-    // @TODO resolve extensions and partials
-    return path.resolve(packagePath, 'index.scss')
+  if (!subPath) {
+    return resolvingPackageRootValues(packagePath, packageManifest);
   } else {
-    // 1. If there is a subpath, resolve that path relative to the package root, and
-    //    resolve for file extensions and partials  
-    // @TODO resolve extensions and partials
-    const subpath = pkgPath.replace(resolvingAPackageName(pkgPath) + '/', '');
-    return path.resolve(packagePath, subpath);
+    subPath = subPath.replace(/^\//,'');
+    const resolved = new URL(subPath, 'file://' + packageRoot + '/');
+    return resolved.toString();
   }
-};
+}

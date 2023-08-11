@@ -3,11 +3,11 @@ const assert = require('node:assert');
 const pkgResolution = require('./pkg-resolution');
 const line = () => console.log('\n\n====================');
 
-/** @typedef {[string, string|null]} TestCase */
+/** @typedef {[string, string|null, string?]} TestCase */
 
 /** @param {TestCase} testCase  */
-function checkExample([pkgPath, expectedResolvedPath]) {
-  let res = pkgResolution(pkgPath);
+function checkExample([pkgPath, expectedResolvedPath, previousURL]) {
+  let res = pkgResolution(`pkg:${pkgPath}`, previousURL);
 
   // For testing, simplify the path
   if (res) res = res.split('sass-pkg-test')[1];
