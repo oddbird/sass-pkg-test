@@ -3,15 +3,16 @@
 const path = require('path');
 const resolveExports = require('resolve.exports');
 
-function getDependencyName(full) {
-  if (full.startsWith('@')) {
-    let parts = full.split('/');
+// Implementation of procedure `Resolving a package name`
+function resolvingAPackageName(path) {
+  if (path.startsWith('@')) {
+    let parts = path.split('/');
     return [parts[0], parts[1]].join('/');
-  } else return full.split('/')[0];
+  } else return path.split('/')[0];
 }
 
 function getPackageRoot(pkgPath) {
-  const packageName = getDependencyName(pkgPath);
+  const packageName = resolvingAPackageName(pkgPath);
   let path;
   try {
     path = require.resolve(packageName);
@@ -32,9 +33,6 @@ function getPackagePackage(pkgPath) {
 
 function hasAnyValidExtension(file) {
   return ['.scss', '.sass', '.css'].includes(path.extname(file));
-}
-function hasCSSExtension(file) {
-  return '.css' === path.extname(file);
 }
 
 function resolveWithCondition(packageJSON, pkgPath, condition) {
@@ -59,13 +57,13 @@ module.exports = (pkgPath) => {
   // 2. `style` condition in package.json `exports`
   let styleCondition = resolveWithCondition(packageJSON, pkgPath, 'style');
   if (styleCondition) {
-    styleCondition = styleCondition.filter(hasCSSExtension);
+    styleCondition = styleCondition.filter(hasAnyValidExtension);
     if (styleCondition.length) {
       return path.resolve(packagePath, styleCondition[0]);
     }
   }
   // 3. If no subpath, then find root export-
-  if (getDependencyName(pkgPath) === pkgPath) {
+  if (resolvingAPackageName(pkgPath) === pkgPath) {
     //   1. `sass` key at package.json root (sass, scss, or css)
     if (packageJSON.sass) return path.resolve(packagePath, packageJSON.sass);
     //   2. `style` key at package.json root (css only)
@@ -77,7 +75,7 @@ module.exports = (pkgPath) => {
     // 1. If there is a subpath, resolve that path relative to the package root, and
     //    resolve for file extensions and partials  
     // @TODO resolve extensions and partials
-    const subpath = pkgPath.replace(getDependencyName(pkgPath) + '/', '');
+    const subpath = pkgPath.replace(resolvingAPackageName(pkgPath) + '/', '');
     return path.resolve(packagePath, subpath);
   }
 };
