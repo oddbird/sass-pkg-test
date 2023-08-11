@@ -93,7 +93,7 @@ module.exports = (url, previousURL) => {
   if (!subPath) {
     return resolvingPackageRootValues(packagePath, packageManifest);
   } else {
-    subPath = subPath.replace(/^\//,'');
+    subPath = subPath.replace(/^\//, '');
     const resolved = new URL(subPath, 'file://' + packageRoot + '/');
     return resolved.toString();
   }
