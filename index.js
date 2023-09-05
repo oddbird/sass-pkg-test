@@ -62,6 +62,23 @@ const conditionalOrderCases = [
 conditionalOrderCases.forEach(checkExample);
 
 line();
+console.log('conditional-default - "sass" condition defined after "default"');
+console.log('                    returns index and NOT path defined in package');
+/** @type TestCase[] */
+const conditionalDefaultCases = [
+  ['conditional-default', '/node_modules/conditional-default/index.scss']
+]
+conditionalDefaultCases.forEach(checkExample);
+
+line();
+console.log('conditional-deno - "sass" condition defined after "deno"');
+/** @type TestCase[] */
+const conditionalDenoCases = [
+  ['conditional-deno', '/node_modules/conditional-deno/scss/styles.scss']
+]
+conditionalDenoCases.forEach(checkExample);
+
+line();
 console.log('root-sass - "sass" key defined');
 /** @type TestCase[] */
 const rootSassCases = [
@@ -124,3 +141,4 @@ const noPackageCases = [
 ];
 noPackageCases.forEach(checkExample);
 
+console.log(require.main?.filename)
