@@ -37,9 +37,9 @@ function hasAnyValidExtension(file) {
   return ['.scss', '.sass', '.css'].includes(path.extname(file));
 }
 
-function resolveWithCondition(packageJSON, pkgPath, condition) {
+function resolveWithCondition(packageJSON, pkgPath, conditions) {
   try {
-    return resolveExports.exports(packageJSON, pkgPath, { conditions: [condition] })
+    return resolveExports.exports(packageJSON, pkgPath, { conditions, unsafe: true })
   } catch (error) {
     return undefined;
   }
@@ -73,8 +73,8 @@ module.exports = (url, previousURL) => {
   const { packageManifest, packagePath } = getPackagePackage(fullPath);
   if (!packageManifest || !packagePath) return null;
 
-  // 1. `sass` condition in package.json `exports`
-  let sassCondition = resolveWithCondition(packageManifest, fullPath, 'sass');
+  // 1. `sass`, `style`, or `default` condition in package.json `exports`
+  let sassCondition = resolveWithCondition(packageManifest, fullPath, ['sass', 'style']);
   if (sassCondition) {
     sassCondition = sassCondition.filter(hasAnyValidExtension);
     if (sassCondition.length) {
@@ -82,14 +82,6 @@ module.exports = (url, previousURL) => {
     }
   }
 
-  // 2. `style` condition in package.json `exports`
-  let styleCondition = resolveWithCondition(packageManifest, fullPath, 'style');
-  if (styleCondition) {
-    styleCondition = styleCondition.filter(hasAnyValidExtension);
-    if (styleCondition.length) {
-      return path.resolve(packagePath, styleCondition[0]);
-    }
-  }
   if (!subPath) {
     return resolvingPackageRootValues(packagePath, packageManifest);
   } else {

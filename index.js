@@ -141,4 +141,5 @@ const noPackageCases = [
 ];
 noPackageCases.forEach(checkExample);
 
-console.log(require.main?.filename)
+line();
+console.log('      Success!')
