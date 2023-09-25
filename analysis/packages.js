@@ -56,7 +56,6 @@ const socketDesignSystem = [
   '@atlaskit/ds-lib',
   '@octopusdeploy/design-system-tokens',
   '@carbon/colors',
-  '@deca-ui/react',
   '@carbon/themes',
   'govuk-frontend',
   '@kaizen/component-library',

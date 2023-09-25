@@ -13,7 +13,7 @@ class Counter {
     this.items[item] = this.items[item] + 1;
   }
   toString() {
-    return JSON.stringify(this.items);
+    return JSON.stringify(this.items, null, 2);
   }
 }
 function isString(any) {
@@ -75,13 +75,13 @@ function fileExtension(file) {
 const mainTypeCounter = new Counter();
 const mainTypes = database.map((pkg) => pkg.main).map(fileExtension);
 mainTypes.forEach((type) => mainTypeCounter.inc(type));
-console.log('main file types', mainTypeCounter);
+console.log('main file types: ' + mainTypeCounter);
 
 // file types for module
 const moduleTypeCounter = new Counter();
 const moduleTypes = database.map((pkg) => pkg.module).map(fileExtension);
 moduleTypes.forEach((type) => moduleTypeCounter.inc(type));
-console.log('module file types', moduleTypeCounter);
+console.log('module file types: ' + moduleTypeCounter);
 
 // exports
 const exported = database.map((a) => a.exports);
@@ -91,9 +91,10 @@ exported
   .filter(isString)
   .map(fileExtension)
   .forEach((t) => stringCounter.inc(t));
-console.log('string exports', stringCounter);
+console.log('string exports: ' + stringCounter);
 
 const fromCounter = new Counter();
+const conditionCounter = new Counter();
 const toCounter = new Counter();
 
 function walkExports(exportVal) {
@@ -103,7 +104,11 @@ function walkExports(exportVal) {
     toCounter.inc(fileExtension(exportVal));
   } else {
     Object.keys(exportVal).forEach((key) => {
-      fromCounter.inc(key);
+      if (key.startsWith('.')) {
+        fromCounter.inc(fileExtension(key));
+      } else {
+        conditionCounter.inc(key);
+      }
       if (typeof exportVal[key] === 'string') {
         toCounter.inc(fileExtension(key));
       } else {
@@ -114,5 +119,6 @@ function walkExports(exportVal) {
 }
 
 exported.filter(isConditional).forEach(walkExports);
-console.log('fromCounter', fromCounter);
-console.log('toCounter- extensions', toCounter);
+console.log('export conditions' + conditionCounter);
+console.log('exports- source extensions' + fromCounter);
+console.log('exports- destination extensions' + toCounter);
