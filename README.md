@@ -2,7 +2,7 @@
 
 This is a repo to prove out the recommended algorithm for resolving `pkg` URLs
 as dependencies in Sass, per the
-[Package Imports proposal](https://github.com/oddbird/sass/pull/3).
+[Package Imports proposal](https://github.com/sass/sass/blob/main/proposal/package-importer.d.ts.md).
 
 The `node_modules_keep` folder contains mocked dependencies. Running
 `npm install` will install the dependencies and then copy the mocked
